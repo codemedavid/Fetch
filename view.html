@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <title>View Movie</title>
+</head>
+<body>
+  <div class="row">
+    <div class="col-auto">
+      <img src="" class="img-thumbnail" id="poster" alt="">
+    </div>
+    <div class="col">
+      <div class="row" style="margin-bottom: 0">
+        <h1 id="movieTitle" style="margin-bottom: 0"></h1>
+      </div>
+      <div style="margin-top: 2rem">
+        <div class="row">
+          <p id="release_date"></p>
+        </div>
+        <div class="row">
+          <p id="movieDesc"></p>
+        </div>
+        <div class="row">
+          <p id="movie_genre"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams(url.search);
+
+        const movieId = params.get('id');
+        const movies = JSON.parse(localStorage.getItem('movies'));
+        const genres = JSON.parse(localStorage.getItem('genres'));
+
+        if (movies === null) {
+        fetchMovieList()
+            .then(movieList => {
+            localStorage.setItem('movies', JSON.stringify(movieList));
+            const movie = movieList.find(movie => movie._id === movieId);
+            const movieTitle = movie ? movie.title : "Unknown";
+            const movieDesc = movie ? movie.description : "Unknown";
+            const poster_url = movie ? movie.poster_url : "Unknown";
+            const release_date = movie ? movie.release_date : "Unknown";
+            const movie_genre_id = movie ? movie.genre : "Unknown";
+            const movie_genre = genres ? genres.find(genre => genre._id === movie_genre_id)?.title : "Unknown";
+            displayMovieDetails(movieId, movieTitle, movieDesc, poster_url, release_date, movie_genre);
+            })
+            .catch(error => {
+            console.error('Failed to fetch movie list:', error);
+            displayMovieDetails(movieId, "Unknown");
+            });
+        } else {
+        
+        const movie = movies.find(movie => movie._id === movieId);
+        const movieTitle = movie ? movie.title : "Unknown";
+        const movieDesc = movie ? movie.description : "Unknown";
+        const poster_url = movie ? movie.poster_url : "Unknown";
+        const release_date = movie ? movie.release_date : "Unknown";
+        const movie_genre_id = movie ? movie.genre : "Unknown";
+        const movie_genre = genres ? genres.find(genre => genre._id === movie_genre_id)?.title : "Unknown";
+
+        displayMovieDetails(movieId, movieTitle, movieDesc, poster_url, release_date, movie_genre);
+        }
+
+        function fetchMovieList() {
+        
+        }
+
+        function displayMovieDetails(movieId, movieTitle, movieDesc, poster_url, release_date, movie_genre) {
+        document.getElementById("movieTitle").innerText = `Movie Title: ${movieTitle}`;
+        document.getElementById("movieDesc").innerText = `Movie Description: ${movieDesc}`;
+        document.getElementById("release_date").innerText = `Release Date: ${release_date}`;
+        document.getElementById("movie_genre").innerText = `Genre: ${movie_genre}`;
+        document.getElementById("poster").src = poster_url;
+        }
+
+  </script>
+</body>
+</html>
